@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
@@ -24,7 +25,8 @@ export function Navbar() {
       
       const sections = document.querySelectorAll("section[id]");
       sections.forEach(section => {
-        const sectionTop = section.offsetTop;
+        // Use type assertion to tell TypeScript that the element has offsetTop property
+        const sectionTop = (section as HTMLElement).offsetTop;
         if (window.scrollY >= sectionTop - 100) {
           setActiveSection(section.id);
         }
