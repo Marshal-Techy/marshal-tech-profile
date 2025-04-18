@@ -1,5 +1,5 @@
 
-import { Award, Brain, Certificate, Lightbulb } from "lucide-react";
+import { Award, Brain, Star, Lightbulb } from "lucide-react";
 
 const achievements = [
   {
@@ -25,7 +25,7 @@ const achievements = [
   {
     title: "Certifications",
     description: "Edufabrica AI Workshop, Amazon Bedrock x AstraDB, Career Essentials in GenAI by Microsoft",
-    icon: <Certificate className="text-primary" size={24} />
+    icon: <Star className="text-primary" size={24} />
   }
 ];
 
