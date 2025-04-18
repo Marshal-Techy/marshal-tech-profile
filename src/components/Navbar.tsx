@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -16,11 +16,21 @@ const navLinks = [
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
+      
+      const sections = document.querySelectorAll("section[id]");
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.scrollY >= sectionTop - 100) {
+          setActiveSection(section.id);
+        }
+      });
     };
+    
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -36,25 +46,36 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 flex items-center justify-between">
-        <a href="#home" className="font-heading text-xl font-bold">
+        <motion.a 
+          href="#home" 
+          className="font-heading text-xl font-bold"
+          whileHover={{ scale: 1.05 }}
+        >
           Marshal<span className="text-primary">.</span>
-        </a>
+        </motion.a>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <a
+            <motion.a
               key={link.name}
               href={link.href}
-              className="nav-link"
+              className={`nav-link relative ${
+                activeSection === link.href.slice(1) ? "text-primary" : ""
+              }`}
+              whileHover={{ scale: 1.05 }}
             >
               {link.name}
-            </a>
+              {activeSection === link.href.slice(1) && (
+                <motion.div
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"
+                  layoutId="underline"
+                />
+              )}
+            </motion.a>
           ))}
           <ThemeToggle />
         </nav>
 
-        {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center gap-2">
           <ThemeToggle />
           <Button
@@ -68,21 +89,31 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <nav className="md:hidden flex flex-col gap-4 p-6 bg-background/95 backdrop-blur-md border-t">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="nav-link"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {link.name}
-            </a>
-          ))}
-        </nav>
-      )}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.nav 
+            className="md:hidden flex flex-col gap-4 p-6 bg-background/95 backdrop-blur-md border-t"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {navLinks.map((link) => (
+              <motion.a
+                key={link.name}
+                href={link.href}
+                className={`nav-link ${
+                  activeSection === link.href.slice(1) ? "text-primary" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+                whileHover={{ x: 10 }}
+              >
+                {link.name}
+              </motion.a>
+            ))}
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
